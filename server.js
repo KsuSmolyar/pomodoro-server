@@ -3,7 +3,9 @@ import webpush from 'web-push';
 import cors from 'cors';
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'https://ksusmolyar.github.io',
+}));
 app.use(express.json());
 
 const publicVapidKey = 'BM8n9S3709gqIbfpd_Rwh00LhuwJMIDqdgJAQXeXjdkuyfvIKYcUbO5U8gkILE3w3reZZY1u_K9ksq_UUDVM6Qc';
