@@ -22,23 +22,35 @@ const subscriptions = [];
 
 app.post('/subscribe', (req, res) => {
   const subscription = req.body;
-  subscriptions.push(subscription);
+
+  // проверим, есть ли уже эта подписка
+  const exists = subscriptions.find(s => s.endpoint === subscription.endpoint);
+  if (!exists) {
+    subscriptions.push(subscription);
+  }
+
   res.status(201).json({});
 });
 
 app.post('/notify', async (req, res) => {
-  const payload = JSON.stringify({
-    title: 'Pomodoro Timer',
-    body: 'Время вышло!'
-  });
+    const { endpoint } = req.body; 
+    const sub = subscriptions.find(s => s.endpoint === endpoint);
+    if (!sub) {
+        return res.status(404).json({ error: 'Subscription not found' });
+    }
 
-  await Promise.all(
-    subscriptions.map(sub =>
-      webpush.sendNotification(sub, payload).catch(err => console.error(err))
-    )
-  );
+   const payload = JSON.stringify({
+     title: 'Pomodoro Timer',
+     body: 'Время вышло!'
+   });
 
-  res.status(200).json({ message: 'Notifications sent' });
+    try {
+        await webpush.sendNotification(sub, payload);
+        res.status(200).json({ message: 'Notification sent' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Failed to send notification' });
+    }
 });
 
 const PORT = process.env.PORT || 4000;
