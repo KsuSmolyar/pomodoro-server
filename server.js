@@ -17,7 +17,7 @@ webpush.setVapidDetails(
   privateVapidKey
 );
 
-// временное хранилище подписок (для теста, в продакшне лучше база)
+// временное хранилище подписок
 const subscriptions = [];
 
 app.post('/subscribe', (req, res) => {
